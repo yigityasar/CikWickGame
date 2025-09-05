@@ -15,5 +15,10 @@ public class Consts
         public const string ROTTEN_WHEAT = "RottenWheat";
     }
 
+    public struct OtherAnimations
+    {
+        public const string IS_SPATULA_JUMPING = "IsSpatulaJumping";
+    }
+
 
 }
