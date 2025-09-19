@@ -12,7 +12,7 @@ public class WinLoseUI : MonoBehaviour
     [SerializeField] private RectTransform _winPopupTransform;
     [SerializeField] private RectTransform _losePopupTransform;
 
-    [Header("References")]
+    [Header("Settings")]
     [SerializeField] private float _animationDuration = 0.3f;
 
     public void OnGameWin()
