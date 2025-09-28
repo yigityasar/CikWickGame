@@ -102,11 +102,11 @@ public class PlayerController : MonoBehaviour
 
         var newState = currentState switch
         {
+            _ when !isGrounded => PlayerState.Jump,
             _ when movementDirection == Vector3.zero && isGrounded && !isSliding => PlayerState.Idle,
             _ when movementDirection != Vector3.zero && isGrounded && !isSliding => PlayerState.Move,
             _ when movementDirection != Vector3.zero && isGrounded && isSliding => PlayerState.Slide,
             _ when movementDirection == Vector3.zero && isGrounded && isSliding => PlayerState.SlideIdle,
-            _ when !_canJump && !isGrounded => PlayerState.Jump,
             _ => currentState
         };
 
@@ -137,20 +137,49 @@ public class PlayerController : MonoBehaviour
         };
 
         _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * forceMultiplier, ForceMode.Force);
+
+        // _movementDirection = _orientationTransform.forward * _verticalInput + _orientationTransform.right * _horizontalInput;
+
+        // if (_stateController.GetCurrentState() == PlayerState.Jump)
+        // {
+        //     if (_movementDirection != Vector3.zero)
+        //     {
+        //         _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * 0.1f, ForceMode.Force);
+        //     }
+        //     return;
+        // }
+
+        // float forceMultiplier = _stateController.GetCurrentState() switch
+        // {
+        //     PlayerState.Move => 1f,
+        //     PlayerState.Slide => _slideMultiplier,
+        //     _ => 1f
+        // };
+
+        // _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * forceMultiplier, ForceMode.Force);
     }
     private void SetPlayerDrag()
     {
+        // _playerRigidbody.linearDamping = _stateController.GetCurrentState() switch
+        // {
+        //     PlayerState.Move => _groundDrag,
+        //     PlayerState.Slide => _slideDrag,
+        //     PlayerState.Jump => _airDrag,
+        //     _ => _playerRigidbody.linearDamping
+        // };
+        // if (_isSliding)
+        //     _playerRigidbody.linearDamping = _slideDrag;
+        // else
+        //     _playerRigidbody.linearDamping = _groundDrag;
+
         _playerRigidbody.linearDamping = _stateController.GetCurrentState() switch
         {
             PlayerState.Move => _groundDrag,
-            PlayerState.Slide => _slideDrag,
-            PlayerState.Jump => _airDrag,
-            _ => _playerRigidbody.linearDamping
+            PlayerState.Slide => _slideDrag,  
+            PlayerState.SlideIdle => _slideDrag,
+            PlayerState.Jump => _airDrag, // Bu değeri çok düşük tutun (0.1-0.3)
+            _ => _groundDrag
         };
-        if (_isSliding)
-            _playerRigidbody.linearDamping = _slideDrag;
-        else
-            _playerRigidbody.linearDamping = _groundDrag;
     }
 
     private void LimitPlayerSpeed()
@@ -165,9 +194,14 @@ public class PlayerController : MonoBehaviour
     }
     private void SetPlayerJumping()
     {
-        OnPlayerJumped?.Invoke();
+         OnPlayerJumped?.Invoke();
 
-        _playerRigidbody.linearVelocity = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
+        // _playerRigidbody.linearVelocity = new Vector3(_playerRigidbody.linearVelocity.x, 0f, _playerRigidbody.linearVelocity.z);
+        // _playerRigidbody.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
+    
+        Vector3 currentVelocity = _playerRigidbody.linearVelocity;
+        _playerRigidbody.linearVelocity = new Vector3(currentVelocity.x, 0f, currentVelocity.z);
+    
         _playerRigidbody.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
     }
 
